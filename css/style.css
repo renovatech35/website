@@ -1,0 +1,59 @@
+/* Custom Styles - Strong Modern Palette */
+:root {
+    --color-primary: #0ea5e9; /* Sky 500 */
+    --color-secondary: #10b981; /* Emerald 500 */
+    --color-dark: #0f172a; /* Slate 900 */
+}
+.hero-bg {
+    background: linear-gradient(to bottom right, rgba(2, 6, 23, 0.9), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+/* Strong "Tech" Gradient: Electric Green to Deep Science Blue */
+.brand-gradient {
+    background: linear-gradient(135deg, #059669 0%, #2563eb 50%, #4f46e5 100%);
+}
+.text-brand {
+    background: linear-gradient(135deg, #059669 0%, #2563eb 50%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.btn-primary {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+}
+.btn-primary:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.23);
+}
+.glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out both;
+}
+details > summary {
+    list-style: none;
+}
+details > summary::-webkit-details-marker {
+    display: none;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
