@@ -61,3 +61,38 @@ document.querySelectorAll('#mobile-menu a').forEach(link => {
         menu.classList.add('hidden');
     });
 });
+
+// submit form via Formspree
+const form = document.getElementById("contact-form");
+const status = document.getElementById("form-status");
+
+form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    status.textContent = "Sending...";
+    status.className = "text-sm text-slate-500";
+
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch("https://formspree.io/f/mpweypvn", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Accept": "application/json"
+            }
+        });
+
+        if (response.ok) {
+            status.textContent = "Thank you! Your request has been sent.";
+            status.className = "text-sm text-green-600 font-semibold";
+            form.reset();
+        } else {
+            status.textContent = "Something went wrong. Please try again.";
+            status.className = "text-sm text-red-600 font-semibold";
+        }
+    } catch (error) {
+        status.textContent = "Network error. Please try again later.";
+        status.className = "text-sm text-red-600 font-semibold";
+    }
+});
