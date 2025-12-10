@@ -71,9 +71,14 @@
 
         <!-- Hero Section -->
         <section id="home" class="hero-bg min-h-screen flex items-center pt-20">
+            <!-- Image slider (fills the hero background). Images should be placed in `images/slides/`.
+                 The script will attempt to load `images/slides/index.json` (array of filenames).
+                 If that file doesn't exist it will try sequential names like `slide1.jpg`, `slide2.jpg`, ... -->
+            <div id="hero-slider" class="hero-slider"></div>
+
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <div
-                    class="bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-3xl inline-block border border-white/10 shadow-2xl animate-fade-in-up">
+                    class="hero-content bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-3xl inline-block border border-white/10 shadow-2xl animate-fade-in-up">
                     <span
                         class="inline-block py-1 px-3 rounded-full bg-green-500/20 text-green-400 border border-green-500/30 text-sm font-semibold mb-6">
                         Trusted ITAD & Recycling in Victoria
@@ -156,7 +161,7 @@
                         <div
                             class="absolute inset-0 bg-gradient-to-tr from-blue-600 to-green-400 rounded-3xl transform rotate-3 opacity-20">
                         </div>
-                        <img src="https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+                        <img src="images/laptop-image.png"
                             alt="IT Equipment Recycling"
                             class="relative rounded-3xl shadow-xl object-cover h-96 w-full">
                     </div>

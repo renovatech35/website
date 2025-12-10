@@ -96,3 +96,159 @@ form.addEventListener("submit", async function (e) {
         status.className = "text-sm text-red-600 font-semibold";
     }
 });
+
+/* Hero slider: load images from images/slides/ and auto-rotate.
+   Behavior:
+   - If images/slides/index.json exists and contains an array of filenames, use that.
+   - Otherwise, try sequential filenames: slide1.jpg, slide2.jpg, ... up to slide12 with common extensions.
+   - If no images found, leave existing hero background intact.
+*/
+function imageExists(url) {
+    return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    });
+}
+
+async function initHeroSlider() {
+    const sliderEl = document.getElementById('hero-slider');
+    if (!sliderEl) {
+        return;
+    }
+
+    const basePath = 'images/slides/';
+    let filenames = [];
+
+    // Try index.json first
+    try {
+        const res = await fetch(basePath + 'index.json');
+        if (res.ok) {
+            const data = await res.json();
+            if (Array.isArray(data) && data.length) {
+                filenames = data;
+            }
+        }
+    } catch (e) {
+        // Continue if index.json fails
+    }
+
+    // If no index.json or it's empty, try sequential patterns
+    if (!filenames.length) {
+        const exts = ['jpg','jpeg','png','webp','svg'];
+        for (let i = 1; i <= 12; i++) {
+            for (const ext of exts) {
+                const name = `slide${i}.${ext}`;
+                const url = basePath + name;
+                // eslint-disable-next-line no-await-in-loop
+                const ok = await imageExists(url);
+                if (ok) {
+                    filenames.push(name);
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!filenames.length) {
+        return;
+    }
+
+    // Build slide elements
+    const slides = [];
+    filenames.forEach((filename, i) => {
+        const img = document.createElement('img');
+        img.src = basePath + filename;
+        img.alt = `Slide ${i + 1}`;
+        img.setAttribute('aria-hidden', 'true');
+        img.style.pointerEvents = 'none';
+        if (i === 0) img.classList.add('active');
+        sliderEl.appendChild(img);
+        slides.push(img);
+    });
+
+    // Create indicators
+    const indicatorContainer = document.createElement('div');
+    indicatorContainer.className = 'slider-indicators';
+    
+    const indicators = [];
+    slides.forEach((_, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.setAttribute('data-slide', i);
+        if (i === 0) btn.classList.add('active');
+        indicatorContainer.appendChild(btn);
+        indicators.push(btn);
+    });
+    
+    sliderEl.appendChild(indicatorContainer);
+
+    // Slider state
+    let currentSlide = 0;
+    let autoplayTimer = null;
+
+    // Change slide function
+    function goToSlide(slideIndex) {
+        // Remove active from all
+        slides.forEach(img => img.classList.remove('active'));
+        indicators.forEach(btn => btn.classList.remove('active'));
+        
+        // Add active to selected
+        slides[slideIndex].classList.add('active');
+        indicators[slideIndex].classList.add('active');
+        
+        currentSlide = slideIndex;
+    }
+
+    // Autoplay
+    function startAutoplay() {
+        stopAutoplay();
+        autoplayTimer = setInterval(() => {
+            const nextSlide = (currentSlide + 1) % slides.length;
+            goToSlide(nextSlide);
+        }, 5000);
+    }
+
+    function stopAutoplay() {
+        if (autoplayTimer) {
+            clearInterval(autoplayTimer);
+            autoplayTimer = null;
+        }
+    }
+
+    // Indicator click handlers
+    indicators.forEach((btn, index) => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            goToSlide(index);
+            startAutoplay();
+        });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+            goToSlide((currentSlide - 1 + slides.length) % slides.length);
+            startAutoplay();
+        } else if (e.key === 'ArrowRight') {
+            goToSlide((currentSlide + 1) % slides.length);
+            startAutoplay();
+        }
+    });
+
+    // Pause on hover
+    sliderEl.addEventListener('mouseenter', () => {
+        stopAutoplay();
+    });
+
+    sliderEl.addEventListener('mouseleave', () => {
+        startAutoplay();
+    });
+
+    // Start autoplay
+    startAutoplay();
+}
+
+window.addEventListener('load', initHeroSlider);
