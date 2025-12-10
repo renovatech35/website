@@ -114,46 +114,24 @@ function imageExists(url) {
 
 async function initHeroSlider() {
     const sliderEl = document.getElementById('hero-slider');
-    if (!sliderEl) {
-        return;
-    }
+    if (!sliderEl) return;
 
     const basePath = 'images/slides/';
     let filenames = [];
 
-    // Try index.json first
+    // Strictly rely on index.json only
     try {
         const res = await fetch(basePath + 'index.json');
         if (res.ok) {
             const data = await res.json();
-            if (Array.isArray(data) && data.length) {
-                filenames = data;
-            }
+            if (Array.isArray(data) && data.length) filenames = data;
         }
-    } catch (e) {
-        // Continue if index.json fails
-    }
-
-    // If no index.json or it's empty, try sequential patterns
-    if (!filenames.length) {
-        const exts = ['jpg','jpeg','png','webp','svg'];
-        for (let i = 1; i <= 12; i++) {
-            for (const ext of exts) {
-                const name = `slide${i}.${ext}`;
-                const url = basePath + name;
-                // eslint-disable-next-line no-await-in-loop
-                const ok = await imageExists(url);
-                if (ok) {
-                    filenames.push(name);
-                    break;
-                }
-            }
-        }
-    }
-
-    if (!filenames.length) {
+    } catch (_) {
+        // If fetch fails, do nothing — we will not probe files
         return;
     }
+
+    if (!filenames.length) return; // nothing to do
 
     // Build slide elements
     const slides = [];
@@ -171,7 +149,6 @@ async function initHeroSlider() {
     // Create indicators
     const indicatorContainer = document.createElement('div');
     indicatorContainer.className = 'slider-indicators';
-    
     const indicators = [];
     slides.forEach((_, i) => {
         const btn = document.createElement('button');
@@ -181,7 +158,6 @@ async function initHeroSlider() {
         indicatorContainer.appendChild(btn);
         indicators.push(btn);
     });
-    
     sliderEl.appendChild(indicatorContainer);
 
     // Slider state
@@ -190,14 +166,10 @@ async function initHeroSlider() {
 
     // Change slide function
     function goToSlide(slideIndex) {
-        // Remove active from all
         slides.forEach(img => img.classList.remove('active'));
         indicators.forEach(btn => btn.classList.remove('active'));
-        
-        // Add active to selected
         slides[slideIndex].classList.add('active');
         indicators[slideIndex].classList.add('active');
-        
         currentSlide = slideIndex;
     }
 
@@ -209,13 +181,7 @@ async function initHeroSlider() {
             goToSlide(nextSlide);
         }, 5000);
     }
-
-    function stopAutoplay() {
-        if (autoplayTimer) {
-            clearInterval(autoplayTimer);
-            autoplayTimer = null;
-        }
-    }
+    function stopAutoplay() { if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; } }
 
     // Indicator click handlers
     indicators.forEach((btn, index) => {
@@ -239,13 +205,8 @@ async function initHeroSlider() {
     });
 
     // Pause on hover
-    sliderEl.addEventListener('mouseenter', () => {
-        stopAutoplay();
-    });
-
-    sliderEl.addEventListener('mouseleave', () => {
-        startAutoplay();
-    });
+    sliderEl.addEventListener('mouseenter', () => stopAutoplay());
+    sliderEl.addEventListener('mouseleave', () => startAutoplay());
 
     // Start autoplay
     startAutoplay();
